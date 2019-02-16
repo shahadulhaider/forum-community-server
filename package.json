@@ -6,7 +6,11 @@
   "main": "app.js",
   "scripts": {
     "start": "node ./bin/start",
-    "dev": "nodemon ./bin/start"
+    "dev": "cross-env NODE_ENV=development nodemon ./bin/start",
+    "knex:make": "cross-env NODE_ENV=development knex migrate:make",
+    "knex:migrate": "cross-env NODE_ENV=development knex migrate:latest",
+    "knex:rollback": "cross-env NODE_ENV=development knex migrate:rollback",
+    "knex:seed": "cross-env NODE_ENV=development knex seed:run"
   },
   "dependencies": {
     "cookie-parser": "^1.4.3",
@@ -18,6 +22,8 @@
     "pg": "^7.8.0"
   },
   "devDependencies": {
+    "cross-env": "^5.2.0",
+    "dotenv": "^6.2.0",
     "eslint": "^5.10.0",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-plugin-import": "^2.14.0",
