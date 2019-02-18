@@ -13,13 +13,15 @@ module.exports = {
   findByEmail(email) {
     return db('users').where('email', email).first();
   },
-  update(id, user) {
-    return db('users').where('id', id).update(user);
+  async update(id, user) {
+    const rows = await db('users').where('id', id).update(user, '*');
+    return rows[0];
   },
-  insert(user) {
+  async insert(user) {
     const result = Joi.validate(user, schema);
     if (result.error === null) {
-      return db('users').insert(user);
+      const rows = await db('users').insert(user, '*');
+      return rows[0];
     }
     return Promise.reject(result.error);
   }

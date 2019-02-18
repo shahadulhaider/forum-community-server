@@ -3,14 +3,6 @@ const GoogleStrategy = require('passport-google-oauth20').Strategy;
 
 const users = require('../queries/users');
 
-passport.serializeUser((user, done) => {
-  done(null, user);
-});
-
-passport.deserializeUser((id, done) => {
-  done(null, id);
-});
-
 passport.use(
   new GoogleStrategy(
     {
@@ -20,6 +12,7 @@ passport.use(
     },
     async (accessToken, refreshToken, profile, done) => {
       const email = profile.emails[0].value;
+      
       const googleUser = {
         display_name: profile.displayName,
         email,
@@ -28,16 +21,20 @@ passport.use(
         role_id: 1
       };
 
-      let user = await users.findByEmail(email);
+      try {
+        let user = await users.findByEmail(email);
 
-      if (user) {
-        googleUser.role_id = user.role_id;
-        user = await users.update(user.id, googleUser);
-      } else {
-        user = await users.insert(googleUser);
+        if (user) {
+          googleUser.role_id = user.role_id;
+          user = await users.update(user.id, googleUser);
+        } else {
+          user = await users.insert(googleUser);
+        }
+
+        return done(null, user);
+      } catch (error) {
+        return done(error);
       }
-
-      return done(null, user);
     }
   )
 );

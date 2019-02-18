@@ -1,36 +1,23 @@
 const router = require('express').Router();
 const passport = require('passport');
-
 require('../passport/google');
 
-// auth login
-// router.get('/login', (req, res) => {
-//   res.render('login', { user: req.user });
-// });
-
-// // auth logout
-// router.get('/logout', (req, res) => {
-//   req.logout();
-//   res.redirect('/');
-// });
+const { create } = require('./utils');
 
 // auth with google
-router.get(
-  '/google',
-  passport.authenticate('google', {
-    scope: ['profile', 'email']
-  })
-);
+router.get('/google', passport.authenticate('google', {
+  scope: ['profile', 'email']
+}));
 
 // callback route for google to redirect to
-router.get(
-  '/google/redirect',
-  passport.authenticate('google'),
-  (req, res) => {
-    console.log('here');
-    
-    res.redirect('/');
-  }
-);
+router.get('/google/redirect', (req, res, next) => {
+  passport.authenticate('google', async (err, user) => {
+    if (err) {
+      return next(err);
+    }
+    const token = await create(user);
+    res.json({ token });
+  })(req, res, next);
+});
 
 module.exports = router;

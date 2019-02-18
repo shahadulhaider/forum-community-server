@@ -21,6 +21,8 @@
       {
         "argsIgnorePattern": "next"
       }
-    ]
+    ],
+    "consistent-return": "off",
+    "no-console": "off"
   }
 }
