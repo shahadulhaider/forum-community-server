@@ -15,8 +15,13 @@ router.get('/google/redirect', (req, res, next) => {
     if (err) {
       return next(err);
     }
-    const token = await create(user);
-    res.json({ token });
+
+    try {
+      const token = await create(user);
+      res.redirect(`${process.env.CLIENT_REDIRECT}${token}`);
+    } catch (error) {
+      res.redirect(`${process.env.CLIENT_ERROR_REDIRECT}${error.message}`);
+    }
   })(req, res, next);
 });
 
